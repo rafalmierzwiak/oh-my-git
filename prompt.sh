@@ -82,26 +82,30 @@ if [ -n "${BASH_VERSION}" ]; then
         local cyan='\e[0;36m'
         local white='\e[0;37m'
 
+        local foreground_white='\e[38;5;24m'
+
         #background
         local background_black='\e[40m'
-        local background_red='\e[41m'
+        local background_red='\e[48;5;23m'
         local background_green='\e[42m'
         local background_yellow='\e[43m'
         local background_blue='\e[44m'
         local background_purple='\e[45m'
         local background_cyan='\e[46m'
-        local background_white='\e[47m'
+        local background_white='\e[48;5;24m'
         
         local reset='\e[0m'     # Text Reset]'
 
         local black_on_white="${black}${background_white}"
         local yellow_on_white="${yellow}${background_white}"
-        local red_on_white="${red}${background_white}"
+        local red_on_white="${black}${background_white}"
         local red_on_black="${red}${background_black}"
         local black_on_red="${black}${background_red}"
-        local white_on_red="${white}${background_red}"
+        local white_on_red="${black}${background_red}"
         local yellow_on_red="${yellow}${background_red}"
 
+
+        local omg_last_symbol_color='\e[0;38;5;23m\e[40m'
 
         # Flags
         local omg_default_color_on="${black_on_white}"
@@ -110,11 +114,11 @@ if [ -n "${BASH_VERSION}" ]; then
             # on filesystem
             prompt="${black_on_white} "
             prompt+=$(enrich_append $is_a_git_repo $omg_is_a_git_repo_symbol "${black_on_white}")
-            prompt+=$(enrich_append $has_stashes $omg_has_stashes_symbol "${yellow_on_white}")
+            prompt+=$(enrich_append $has_stashes $omg_has_stashes_symbol "${black_on_white}")
 
-            prompt+=$(enrich_append $has_untracked_files $omg_has_untracked_files_symbol "${red_on_white}")
-            prompt+=$(enrich_append $has_modifications $omg_has_modifications_symbol "${red_on_white}")
-            prompt+=$(enrich_append $has_deletions $omg_has_deletions_symbol "${red_on_white}")
+            prompt+=$(enrich_append $has_untracked_files $omg_has_untracked_files_symbol "${black_on_white}")
+            prompt+=$(enrich_append $has_modifications $omg_has_modifications_symbol "${black_on_white}")
+            prompt+=$(enrich_append $has_deletions $omg_has_deletions_symbol "${black_on_white}")
             
 
             # ready
@@ -124,13 +128,13 @@ if [ -n "${BASH_VERSION}" ]; then
             
             # next operation
 
-            prompt+=$(enrich_append $ready_to_commit $omg_ready_to_commit_symbol "${red_on_white}")
+            prompt+=$(enrich_append $ready_to_commit $omg_ready_to_commit_symbol "${black_on_white}")
 
             # where
 
-            prompt="${prompt} ${white_on_red} ${black_on_red}"
+            prompt="${prompt}${foreground_white}${background_red} ${black_on_red}"
             if [[ $detached == true ]]; then
-                prompt+=$(enrich_append $detached $omg_detached_symbol "${white_on_red}")
+                prompt+=$(enrich_append $detached $omg_detached_symbol "${black_on_red}")
                 prompt+=$(enrich_append $detached "(${current_commit_hash:0:7})" "${black_on_red}")
             else            
                 if [[ $has_upstream == false ]]; then
@@ -143,7 +147,7 @@ if [ -n "${BASH_VERSION}" ]; then
                     fi
 
                     if [[ $has_diverged == true ]]; then
-                        prompt+=$(enrich_append true "-${commits_behind} ${omg_has_diverged_symbol} +${commits_ahead}" "${white_on_red}")
+                        prompt+=$(enrich_append true "-${commits_behind} ${omg_has_diverged_symbol} +${commits_ahead}" "${black_on_red}")
                     else
                         if [[ $commits_behind -gt 0 ]]; then
                             prompt+=$(enrich_append true "-${commits_behind} ${white_on_red}${omg_can_fast_forward_symbol}${black_on_red} --" "${black_on_red}")
@@ -162,13 +166,13 @@ if [ -n "${BASH_VERSION}" ]; then
             prompt+=$(enrich_append ${is_on_a_tag} "${omg_is_on_a_tag_symbol} ${tag_at_current_commit}" "${black_on_red}")
             prompt+="${omg_last_symbol_color}${reset}\n"
             prompt+="$(eval_prompt_callback_if_present)"
-            prompt+="${omg_second_line}"
+            prompt+="${omg_second_line:2}"
         else
             prompt+="$(eval_prompt_callback_if_present)"
             prompt+="${omg_ungit_prompt}"
         fi
 
-        echo "${prompt}"
+        echo "\n${prompt}"
     }
     
     PS2="${yellow}→${reset} "
